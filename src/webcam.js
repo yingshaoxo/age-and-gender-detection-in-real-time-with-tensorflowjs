@@ -14,6 +14,18 @@
  * limitations under the License.
  * =============================================================================
  */
+
+/**
+ * This file is originally from:
+ * https://github.com/tensorflow/tfjs-examples/blob/master/webcam-transfer-learning/webcam.js
+ * The following modifications were made to the original file:
+ * - `setup` has been changed to work for Safari, changes sourced from:
+ *    https://github.com/google/emoji-scavenger-hunt/blob/master/src/js/camera.ts#L43-L56
+ * - `capture` has been changed to just divide by 255 instead of
+ *    divide by 127 and subtract 1.
+ * Just run `diff` tbh, yuno MIT license.
+ */
+
 import * as tf from '@tensorflow/tfjs';
 
 /**
@@ -44,8 +56,8 @@ export class Webcam {
       const batchedImage = croppedImage.expandDims(0);
 
       // Normalize the image between -1 and 1. The image comes in between 0-255,
-      // so we divide by 127 and subtract 1.
-      return batchedImage.toFloat().div(tf.scalar(127)).sub(tf.scalar(1));
+      // so we divide by 127 and subtract 1
+      return batchedImage.toFloat().div(tf.scalar(255));
     });
   }
 
@@ -78,30 +90,23 @@ export class Webcam {
   }
 
   async setup() {
-    return new Promise((resolve, reject) => {
-      const navigatorAny = navigator;
-
-      navigator.getUserMedia = navigator.getUserMedia ||
-          navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
-          navigatorAny.msGetUserMedia;
-      if (navigator.getUserMedia) {
-        navigator.getUserMedia(
-            {video: true},
-            stream => {
-              this.webcamElement.srcObject = stream;
-              this.webcamElement.addEventListener('loadeddata', async () => {
-                this.adjustVideoSize(
-                    this.webcamElement.videoWidth,
-                    this.webcamElement.videoHeight);
-                resolve();
-              }, false);
-            },
-            error => {
-              reject();
-            });
-      } else {
-        reject();
-      }
-    });
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        'audio': false,
+        'video': {facingMode: 'environment'}
+      });
+      window.stream = stream;
+      this.webcamElement.srcObject = stream;
+      return new Promise(resolve => {
+        this.webcamElement.onloadedmetadata = () => {
+          this.adjustVideoSize(
+            this.webcamElement.videoWidth,
+            this.webcamElement.videoHeight);
+          resolve();
+        };
+      });
+    } else {
+      throw new Error('No webcam found!');
+    }
   }
 }

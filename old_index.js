@@ -1,6 +1,19 @@
 import * as tf from '@tensorflow/tfjs';
 
 
+import {Webcam} from './webcam';
+
+const webcam = new Webcam(document.getElementById('webcam'));
+
+async function webcam_init() {
+    try {
+        await webcam.setup();
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+
 let age_model;
 let camera;
 
@@ -8,7 +21,7 @@ let camera;
 var $ = require("jquery");
 const faceapi = require("face-api.js");
 
-let minConfidence = 0.7;
+let minConfidence = 0.6;
 let modelLoaded = false;
 
 faceapi.loadFaceDetectionModel('/models')
@@ -16,10 +29,8 @@ faceapi.loadFaceLandmarkModel('/models')
 console.log('start')
 
 async function onPlay(videoEl) {
-    if(videoEl.paused || videoEl.ended)
-        console.log(videoEl)
 
-    const { width, height } = faceapi.getMediaDimensions(videoEl)
+    const {width, height} = faceapi.getMediaDimensions(videoEl)
     /*
     const width= camera.innerWidth()
     const height = camera.innerHeight()
@@ -31,7 +42,6 @@ async function onPlay(videoEl) {
 
     const input = await faceapi.toNetInput(videoEl)
     const locations = await faceapi.locateFaces(input, minConfidence)
-
     var faceImages = await faceapi.extractFaces(input.inputs[0], locations)
 
     // detect landmarks and get the aligned face image bounding boxes
@@ -51,7 +61,6 @@ async function onPlay(videoEl) {
             const ctx = canvas.getContext('2d')
             ctx.drawImage(faceCanvas, 0, 0)
 
-            //expected input_1 to have shape [null,64,64,3] but got array with shape [1,244,237,3]
             var img = tf.fromPixels(faceCanvas)
             const size = Math.min(img.shape[0], img.shape[1]);
             const centerHeight = img.shape[0] / 2;
@@ -90,8 +99,9 @@ async function run() {
     age_model = await tf.loadModel('age_models/model.json');
     camera = $('#webcam')
 
-    var cam = $('#webcam').get(0)
-    onPlay(cam);
+    onPlay(camera.get(0));
 }
 
-run()
+
+const a_promise = webcam_init()
+a_promise.then(run)
