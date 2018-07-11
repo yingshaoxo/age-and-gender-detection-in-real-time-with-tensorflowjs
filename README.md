@@ -1,4 +1,4 @@
-# age and gender detection in real time with tensorflowjs
+# face_detector for tensorflow.js 
 
 #### Env
 ```
