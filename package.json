@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "webpack-dev-server --mode development --host 0.0.0.0 --port 3000 --disableHostCheck true --open",
     "start": "webpack-serve --host 0.0.0.0 --port 3000 --disableHostCheck true --open",
-    "build": "rm dist/* & NODE_ENV=production webpack",
+    "build": "rm dist/* -fr & webpack --config ./webpack.config.js",
     "test": "webpack-serve --config ./testwebpack.config.js --host 0.0.0.0 --port 3000 --disableHostCheck true --open",
     "video_test": "webpack-serve --config ./videotestwebpack.config.js --open"
   },

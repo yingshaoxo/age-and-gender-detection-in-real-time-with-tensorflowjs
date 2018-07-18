@@ -4,7 +4,7 @@ var $ = require("jquery");
 let model;
 
 async function run() {
-    model = await tf.loadModel("/keras_experiment/tfjs_model/model.json")
+    model = await tf.loadModel("./keras_experiment/tfjs_model/model.json")
 
     var r = model.predict(tf.tensor2d([[5.0, 5.0]]))
     r.print()

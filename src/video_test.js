@@ -11,8 +11,8 @@ const faceapi = require("face-api.js");
 let minConfidence = 0.7;
 let modelLoaded = false;
 
-faceapi.loadFaceDetectionModel('/models')
-faceapi.loadFaceLandmarkModel('/models')
+faceapi.loadFaceDetectionModel('./models')
+faceapi.loadFaceLandmarkModel('./models')
 console.log('start')
 
 async function onPlay(videoEl) {

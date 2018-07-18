@@ -17,10 +17,10 @@ let modelLoaded = false;
 
 async function init() {
     try {
-        age_model = await tf.loadModel('age_models/model.json')
+        age_model = await tf.loadModel('./age_models/model.json')
 
-        faceapi.loadFaceDetectionModel('/models')
-        faceapi.loadFaceLandmarkModel('/models')
+        faceapi.loadFaceDetectionModel('./models')
+        faceapi.loadFaceLandmarkModel('./models')
 
         await webcam.setup()
 
